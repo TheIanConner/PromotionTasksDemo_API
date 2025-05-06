@@ -1,34 +1,34 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PromotionTasksService.Data;
 using PromotionTasksService.Models;
 using PromotionTasksService.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PromotionTasksService.Tests.Services;
 
 public class UserServiceTests
 {
-    private readonly DbContextOptions<ApplicationDbContext> _dbContextOptions;
-    private readonly Mock<ILogger<UserService>> _mockUserLogger;
+    private readonly DbContextOptions<ApplicationDbContext> dbContextOptions;
+    private readonly Mock<ILogger<UserService>> mockUserLogger;
     
     public UserServiceTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+        this.dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
             
-        _mockUserLogger = new Mock<ILogger<UserService>>();
+        this.mockUserLogger = new Mock<ILogger<UserService>>();
     }
     
     private ApplicationDbContext CreateContext()
     {
-        var context = new ApplicationDbContext(_dbContextOptions);
+        var context = new ApplicationDbContext(this.dbContextOptions);
         context.Database.EnsureCreated();
         return context;
     }
@@ -37,7 +37,7 @@ public class UserServiceTests
     public async Task GetAllUsersAsync_ShouldReturnAllNonDeletedUsers()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
         context.Users.AddRange(
             new User { UserId = 1, Name = "User 1", Deleted = false },
@@ -46,7 +46,7 @@ public class UserServiceTests
         );
         context.SaveChanges();
         
-        var service = new UserService(context, _mockUserLogger.Object);
+        var service = new UserService(context, this.mockUserLogger.Object);
         
         // Act
         var result = await service.GetAllUsersAsync();
@@ -61,7 +61,7 @@ public class UserServiceTests
     public async Task GetUserByIdWithReleasesAndTasksAsync_WhenUserExists_ShouldReturnUserWithReleasesAndTasks()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
         var userId = 1;
         var user = new User { UserId = userId, Name = "Test User", Deleted = false };
@@ -73,7 +73,7 @@ public class UserServiceTests
         context.PromotionTasks.Add(task);
         context.SaveChanges();
         
-        var service = new UserService(context, _mockUserLogger.Object);
+        var service = new UserService(context, this.mockUserLogger.Object);
         
         // Act
         var result = await service.GetUserByIdWithReleasesAndTasksAsync(userId);
@@ -89,7 +89,7 @@ public class UserServiceTests
     public async Task GetUserByIdWithReleasesAndTasksAsync_WhenUserDeleted_ShouldReturnNull()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
         var userId = 1;
         var user = new User { UserId = userId, Name = "Test User", Deleted = true };
@@ -97,7 +97,7 @@ public class UserServiceTests
         context.Users.Add(user);
         context.SaveChanges();
         
-        var service = new UserService(context, _mockUserLogger.Object);
+        var service = new UserService(context, this.mockUserLogger.Object);
         
         // Act
         var result = await service.GetUserByIdWithReleasesAndTasksAsync(userId);

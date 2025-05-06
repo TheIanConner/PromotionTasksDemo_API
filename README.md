@@ -2,6 +2,24 @@
 
 A .NET 8.0 Web API service for managing music release promotion tasks.
 
+### Architectureal decisions
+
+The project uses:
+
+- Entity Framework Core for data access
+- SQLite as the database
+- Swagger/OpenAPI for API documentation
+- xUnit for testing
+- Moq for mocking in tests
+
+After starting with a simple tasks list I decided that tasks should also be tied to a user entity, so that there's some context.
+Then I realised that it made sense that the promotion tasks would be against a release, as a user could have many releases each with their own task lists.
+I added a task list template table into the database to serve as a set list of tasks that a release always starts with. This template list could be editied by an admin app for example.
+I also added priority to the tasks, with the view that the user may want to reorder them as well as update their status.
+
+The code is using GitHub as source control, and automatically deploys out to Azure app services when there is a commit.
+That's not a productionised pipeline (needs quality gates, separate environments, test running, pipelines for manually triggering deployments to Production), but fine for demo purposes.
+
 ## Getting Started
 
 1. Clone the repository
@@ -15,18 +33,9 @@ A .NET 8.0 Web API service for managing music release promotion tasks.
 4. The API will be available at `http://localhost:5000` / `https://localhost:5001`
 5. Swagger documentation is available at `/swagger` endpoint
 6. To run tests run the command 'dotnet test'
-7. Note, for the purpose of the demo I'm returning all data for the User (User, Releases & Release tasks) in the call
+7. Note, for the purpose of the demo I'm returning all data for the User (User, Releases & Release tasks) in the single call
    GET `/api/users/{id}`
-
-## Development
-
-The project uses:
-
-- Entity Framework Core for data access
-- SQLite as the database
-- Swagger/OpenAPI for API documentation
-- xUnit for testing
-- Moq for mocking in tests
+   The other endpoints are there for managing data and updating tasks.
 
 ## Project Structure
 
@@ -39,6 +48,9 @@ PromotionTasksService/
 ├── Models/               # Data models
 │   ├── User.cs
 │   ├── Release.cs
+│   ├── ReleaseTask.cs
+│   ├── ReleaseType.cs
+│   ├── TaskPriority.cs
 │   ├── PromotionTask.cs
 │   └── PromotionTaskStatus.cs
 ├── Services/            # Business logic

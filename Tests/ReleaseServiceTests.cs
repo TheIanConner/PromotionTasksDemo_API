@@ -1,34 +1,34 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PromotionTasksService.Data;
 using PromotionTasksService.Models;
 using PromotionTasksService.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PromotionTasksService.Tests.Services;
 
 public class ReleaseServiceTests
 {
-    private readonly DbContextOptions<ApplicationDbContext> _dbContextOptions;
-    private readonly Mock<ILogger<ReleaseService>> _mockReleaseLogger;
+    private readonly DbContextOptions<ApplicationDbContext> dbContextOptions;
+    private readonly Mock<ILogger<ReleaseService>> mockReleaseLogger;
     
     public ReleaseServiceTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+        this.dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
             
-        _mockReleaseLogger = new Mock<ILogger<ReleaseService>>();
+        this.mockReleaseLogger = new Mock<ILogger<ReleaseService>>();
     }
     
     private ApplicationDbContext CreateContext()
     {
-        var context = new ApplicationDbContext(_dbContextOptions);
+        var context = new ApplicationDbContext(this.dbContextOptions);
         context.Database.EnsureCreated();
         return context;
     }
@@ -37,7 +37,7 @@ public class ReleaseServiceTests
     public async Task GetReleaseByIdAsync_WhenReleaseExists_ShouldReturnRelease()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
         var testRelease = new Release
         {
@@ -53,7 +53,7 @@ public class ReleaseServiceTests
         context.Releases.Add(testRelease);
         context.SaveChanges();
         
-        var service = new ReleaseService(context, _mockReleaseLogger.Object);
+        var service = new ReleaseService(context, this.mockReleaseLogger.Object);
         
         // Act
         var result = await service.GetReleaseByIdAsync(1);
@@ -68,7 +68,7 @@ public class ReleaseServiceTests
     public async Task GetReleaseByIdAsync_WhenReleaseDeleted_ShouldReturnNull()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
         var testRelease = new Release
         {
@@ -84,7 +84,7 @@ public class ReleaseServiceTests
         context.Releases.Add(testRelease);
         context.SaveChanges();
         
-        var service = new ReleaseService(context, _mockReleaseLogger.Object);
+        var service = new ReleaseService(context, this.mockReleaseLogger.Object);
         
         // Act
         var result = await service.GetReleaseByIdAsync(1);
@@ -97,7 +97,7 @@ public class ReleaseServiceTests
     public async Task GetUserReleasesAsync_ShouldReturnAllNonDeletedReleasesForUser()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
         var userId = 1;
         var now = DateTime.UtcNow;
@@ -109,7 +109,7 @@ public class ReleaseServiceTests
         );
         context.SaveChanges();
         
-        var service = new ReleaseService(context, _mockReleaseLogger.Object);
+        var service = new ReleaseService(context, this.mockReleaseLogger.Object);
         
         // Act
         var result = await service.GetUserReleasesAsync(userId);
@@ -124,8 +124,8 @@ public class ReleaseServiceTests
     public async Task CreateReleaseAsync_ShouldAddNewRelease()
     {
         // Arrange
-        using var context = CreateContext();
-        var service = new ReleaseService(context, _mockReleaseLogger.Object);
+        using var context = this.CreateContext();
+        var service = new ReleaseService(context, this.mockReleaseLogger.Object);
         
         var newRelease = new Release
         {
@@ -153,7 +153,7 @@ public class ReleaseServiceTests
     public async Task UpdateReleaseAsync_WhenReleaseExists_ShouldUpdateRelease()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
         var existingRelease = new Release
         {
@@ -169,7 +169,7 @@ public class ReleaseServiceTests
         context.Releases.Add(existingRelease);
         context.SaveChanges();
         
-        var service = new ReleaseService(context, _mockReleaseLogger.Object);
+        var service = new ReleaseService(context, this.mockReleaseLogger.Object);
         
         // Create a new release object with only the properties we want to update
         var updatedRelease = new Release
@@ -199,23 +199,23 @@ public class ReleaseServiceTests
     public async Task DeleteReleaseAsync_WhenReleaseExists_ShouldMarkAsDeleted()
     {
         // Arrange
-        using var context = CreateContext();
+        using var context = this.CreateContext();
         
-        var existingRelease = new Release
+        var testRelease = new Release
         {
             ReleaseId = 1,
-            Title = "Release to Delete",
-            Description = "Description to Delete",
+            Title = "Test Release",
+            Description = "Test Description",
             UserId = 1,
             Type = ReleaseType.Single,
             ReleaseDate = DateTime.UtcNow,
             Deleted = false
         };
         
-        context.Releases.Add(existingRelease);
+        context.Releases.Add(testRelease);
         context.SaveChanges();
         
-        var service = new ReleaseService(context, _mockReleaseLogger.Object);
+        var service = new ReleaseService(context, this.mockReleaseLogger.Object);
         
         // Act
         var result = await service.DeleteReleaseAsync(1);
@@ -223,8 +223,9 @@ public class ReleaseServiceTests
         // Assert
         Assert.True(result);
         
+        // Verify it's marked as deleted in the database
         var releaseInDb = await context.Releases.FindAsync(1);
         Assert.NotNull(releaseInDb);
-        Assert.True(releaseInDb!.Deleted);
+        Assert.True(releaseInDb.Deleted);
     }
 } 

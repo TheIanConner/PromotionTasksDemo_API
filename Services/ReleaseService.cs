@@ -10,38 +10,71 @@ namespace PromotionTasksService.Services;
 /// </summary>
 public class ReleaseService
 {
-    private readonly ApplicationDbContext _context;
-    private readonly ILogger<ReleaseService> _logger;
+    /// <summary>
+    /// Gets the database context.
+    /// </summary>
+    private readonly ApplicationDbContext context;
 
+    /// <summary>
+    /// Gets the logger instance.
+    /// </summary>
+    private readonly ILogger<ReleaseService> logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReleaseService"/> class.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="logger">The logger instance.</param>
     public ReleaseService(ApplicationDbContext context, ILogger<ReleaseService> logger)
     {
-        _context = context;
-        _logger = logger;
+        this.context = context;
+        this.logger = logger;
     }
 
+    /// <summary>
+    /// Gets a release by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the release to retrieve.</param>
+    /// <returns>The release if found and not deleted, null otherwise.</returns>
     public async Task<Release?> GetReleaseByIdAsync(int id)
     {
-        return await _context.Releases
+        return await this.context.Releases
             .FirstOrDefaultAsync(r => r.ReleaseId == id && !r.Deleted);
     }
 
+    /// <summary>
+    /// Gets all releases for a specific user.
+    /// </summary>
+    /// <param name="userId">The ID of the user whose releases to retrieve.</param>
+    /// <returns>A list of all active releases for the user.</returns>
     public async Task<List<Release>> GetUserReleasesAsync(int userId)
     {
-        return await _context.Releases
+        return await this.context.Releases
             .Where(r => r.UserId == userId && !r.Deleted)
             .ToListAsync();
     }
 
+    /// <summary>
+    /// Creates a new release.
+    /// </summary>
+    /// <param name="release">The release to create.</param>
+    /// <returns>The created release with its assigned ID.</returns>
     public async Task<Release> CreateReleaseAsync(Release release)
     {
-        _context.Releases.Add(release);
-        await _context.SaveChangesAsync();
+        this.context.Releases.Add(release);
+        await this.context.SaveChangesAsync();
         return release;
     }
 
+    /// <summary>
+    /// Updates an existing release.
+    /// </summary>
+    /// <param name="id">The ID of the release to update.</param>
+    /// <param name="release">The updated release data.</param>
+    /// <returns>The updated release if found, null if the release doesn't exist or is deleted.</returns>
     public async Task<Release?> UpdateReleaseAsync(int id, Release release)
     {
-        var existingRelease = await _context.Releases.FindAsync(id);
+        var existingRelease = await this.context.Releases.FindAsync(id);
         if (existingRelease == null || existingRelease.Deleted)
         {
             return null;
@@ -53,25 +86,35 @@ public class ReleaseService
         existingRelease.Type = release.Type;
         existingRelease.ReleaseDate = release.ReleaseDate;
         
-        await _context.SaveChangesAsync();
+        await this.context.SaveChangesAsync();
         return existingRelease;
     }
 
+    /// <summary>
+    /// Soft deletes a release.
+    /// </summary>
+    /// <param name="id">The ID of the release to delete.</param>
+    /// <returns>True if the release was found and deleted, false otherwise.</returns>
     public async Task<bool> DeleteReleaseAsync(int id)
     {
-        var release = await _context.Releases.FindAsync(id);
+        var release = await this.context.Releases.FindAsync(id);
         if (release == null || release.Deleted)
         {
             return false;
         }
 
         release.Deleted = true;
-        await _context.SaveChangesAsync();
+        await this.context.SaveChangesAsync();
         return true;
     }
 
+    /// <summary>
+    /// Checks if a release exists and is not deleted.
+    /// </summary>
+    /// <param name="id">The ID of the release to check.</param>
+    /// <returns>True if the release exists and is not deleted, false otherwise.</returns>
     public bool ReleaseExists(int id)
     {
-        return _context.Releases.Any(e => e.ReleaseId == id && !e.Deleted);
+        return this.context.Releases.Any(e => e.ReleaseId == id && !e.Deleted);
     }
 } 

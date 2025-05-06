@@ -4,81 +4,104 @@ using PromotionTasksService.Services;
 
 namespace PromotionTasksService.Controllers;
 
+/// <summary>
+/// Controller for managing users.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly UserService _userService;
-    private readonly ILogger<UserController> _logger;
+    /// <summary>
+    /// Gets the user service.
+    /// </summary>
+    private readonly UserService userService;
 
+    /// <summary>
+    /// Gets the logger instance.
+    /// </summary>
+    private readonly ILogger<UserController> logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UserController"/> class.
+    /// </summary>
+    /// <param name="userService">The user service.</param>
+    /// <param name="logger">The logger.</param>
     public UserController(UserService userService, ILogger<UserController> logger)
     {
-        _userService = userService;
-        _logger = logger;
+        this.userService = userService;
+        this.logger = logger;
     }
 
+    /// <summary>
+    /// Gets all users.
+    /// </summary>
+    /// <returns>A list of all users.</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
     {
         try
         {
-            var users = await _userService.GetAllUsersAsync();
-            return Ok(users);
+            var users = await this.userService.GetAllUsersAsync();
+            return this.Ok(users);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting all users");
-            return StatusCode(500, "An error occurred while retrieving users");
+            this.logger.LogError(ex, "Error getting all users");
+            return this.StatusCode(500, "An error occurred while retrieving users");
         }
     }
 
+    /// <summary>
+    /// Gets a user by their ID.
+    /// </summary>
+    /// <param name="id">The ID of the user to retrieve.</param>
+    /// <returns>The user if found, or NotFound if not found.</returns>
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUserById(int id)
     {
         try
         {
-            var user = await _userService.GetUserByIdWithReleasesAndTasksAsync(id);
+            var user = await this.userService.GetUserByIdWithReleasesAndTasksAsync(id);
             
             if (user == null)
             {
-                return NotFound($"User with ID {id} not found");
+                return this.NotFound($"User with ID {id} not found");
             }
 
-            return Ok(user);
+            return this.Ok(user);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting user by ID {UserId}", id);
-            return StatusCode(500, "An error occurred while retrieving the user");
+            this.logger.LogError(ex, "Error getting user by ID {UserId}", id);
+            return this.StatusCode(500, "An error occurred while retrieving the user");
         }
     }
     
     /// <summary>
-    /// Get a user by name
-    /// This is not a good practice and should be avoided. For the purpose of the demo which has no authentication,
-    /// I'm allowing the user to get a user by name.
-    /// Note: Prefixing the route with 'name' to avoid conflict with the 'id' route.
+    /// Gets a user by their name.
+    /// Note: This endpoint is provided for demo purposes only and should not be used in production
+    /// as it bypasses proper authentication mechanisms.
     /// </summary>
-    /// <param name="name">The name of the user to get</param>
-    /// <returns>The user with the given name</returns>
+    /// <param name="name">The name of the user to retrieve.</param>
+    /// <returns>The user if found, or NotFound if not found.</returns>
     [HttpGet("name/{name}")]
     public async Task<ActionResult<User>> GetUserByName(string name)
     {
         try
         {
-            var user = await _userService.GetUserByNameWithReleasesAndTasksAsync(name);
+            var user = await this.userService.GetUserByNameWithReleasesAndTasksAsync(name);
             
             if (user == null)
             {
-                return NotFound($"User with name '{name}' not found");
+                return this.NotFound($"User with name '{name}' not found");
             }
 
-            return Ok(user);
+            return this.Ok(user);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting user by name {UserName}", name);
-            return StatusCode(500, "An error occurred while retrieving the user");
+            this.logger.LogError(ex, "Error getting user by name {UserName}", name);
+            return this.StatusCode(500, "An error occurred while retrieving the user");
         }
     }
 } 
