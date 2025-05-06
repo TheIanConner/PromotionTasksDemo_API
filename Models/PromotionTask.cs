@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PromotionTasksService.Models;
 
@@ -23,6 +24,7 @@ public class PromotionTask
     /// <summary>
     /// Gets or sets the release this task belongs to.
     /// </summary>
+    [JsonIgnore]
     public Release? Release { get; set; }
     
     /// <summary>
