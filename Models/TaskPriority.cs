@@ -6,14 +6,9 @@ namespace PromotionTasksService.Models;
 public enum TaskPriority
 {
     /// <summary>
-    /// Low priority tasks that are not time-critical.
+    /// Urgent tasks that require immediate attention.
     /// </summary>
-    Low = 0,
-
-    /// <summary>
-    /// Medium priority tasks that should be completed in a reasonable timeframe.
-    /// </summary>
-    Medium,
+    Urgent = 0,
 
     /// <summary>
     /// High priority tasks that need attention soon.
@@ -21,7 +16,12 @@ public enum TaskPriority
     High,
 
     /// <summary>
-    /// Urgent tasks that require immediate attention.
+    /// Medium priority tasks that should be completed in a reasonable timeframe.
     /// </summary>
-    Urgent,
+    Medium,
+
+    /// <summary>
+    /// Low priority tasks that are not time-critical.
+    /// </summary>
+    Low,
 } 

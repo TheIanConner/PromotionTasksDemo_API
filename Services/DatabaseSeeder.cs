@@ -56,21 +56,21 @@ public class DatabaseSeeder
                 {
                     new ReleaseTask
                     {
-                        Title = "Social Media Announcement",
-                        Description = "Create and post announcement across all social media platforms",
-                        Priority = TaskPriority.High,
+                        Title = "Playlist Pitching",
+                        Description = "Research and pitch to relevant Spotify and Apple Music playlists",
+                        Priority = TaskPriority.Urgent,
                     },
                     new ReleaseTask
                     {
-                        Title = "Playlist Pitching",
-                        Description = "Research and pitch to relevant Spotify and Apple Music playlists",
-                        Priority = TaskPriority.High,
+                        Title = "Social Media Announcement",
+                        Description = "Create and post announcement across all social media platforms",
+                        Priority = TaskPriority.Urgent,
                     },
                     new ReleaseTask
                     {
                         Title = "Fan Email Campaign",
                         Description = "Send release announcement to fan mailing list",
-                        Priority = TaskPriority.Medium,
+                        Priority = TaskPriority.High,
                     },
                     new ReleaseTask
                     {
@@ -159,7 +159,7 @@ public class DatabaseSeeder
 
             foreach (var userId in usersWithoutReleases)
             {
-                var numberOfReleases = this.random.Next(1, 4); // Random number of releases for the users between 1 and 3
+                var numberOfReleases = this.random.Next(2, 5); // Random number of releases for the users between 2 and 4
                 var releases = new List<Release>();
 
                 for (int i = 0; i < numberOfReleases; i++)
