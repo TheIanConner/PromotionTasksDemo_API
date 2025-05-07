@@ -30,7 +30,7 @@ That's not a productionised pipeline (needs quality gates, separate environments
    dotnet build
    dotnet run
    ```
-4. The API will be available at `http://localhost:5000` / `https://localhost:5001`
+4. The API will be available at `http://localhost:5110` / `https://localhost:5111`
 5. Swagger documentation is available at `/swagger` endpoint
 6. To run tests run the command 'dotnet test'
 7. Note, for the purpose of the demo I'm returning all data for the User (User, Releases & Release tasks) in the single call

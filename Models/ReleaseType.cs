@@ -8,7 +8,7 @@ public enum ReleaseType
     /// <summary>
     /// A single track release.
     /// </summary>
-    Single,
+    Single = 0,
 
     /// <summary>
     /// An extended play (EP) release, typically containing 3-6 tracks.

@@ -82,11 +82,28 @@ public class PromotionTasksService
             return null;
         }
 
-        existingTask.Description = task.Description;
-        existingTask.Status = task.Status;
-        existingTask.Priority = task.Priority;
-        existingTask.DueDate = task.DueDate;
-        existingTask.ReleaseId = task.ReleaseId;
+        // Only update fields that are provided (non-default values)
+        if (!string.IsNullOrEmpty(task.Description))
+        {
+            existingTask.Description = task.Description;
+        }
+
+        if (task.Status != default)
+        {
+            existingTask.Status = task.Status;
+        }
+
+        if (task.Priority != default)
+        {
+            existingTask.Priority = task.Priority;
+        }
+
+        if (task.DueDate.HasValue)
+        {
+            existingTask.DueDate = task.DueDate;
+        }
+        
+        existingTask.Deleted = task.Deleted;
         
         this.context.PromotionTasks.Update(existingTask);
         await this.context.SaveChangesAsync();

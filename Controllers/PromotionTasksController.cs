@@ -33,9 +33,9 @@ public class PromotionTasksController : ControllerBase
     }
 
     /// <summary>
-    /// Gets all promotion tasks.
+    /// Gets all non-deleted promotion tasks.
     /// </summary>
-    /// <returns>A list of all promotion tasks.</returns>
+    /// <returns>A list of all active (non-deleted) promotion tasks.</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PromotionTask>>> GetAllTasks()
     {
@@ -100,6 +100,33 @@ public class PromotionTasksController : ControllerBase
         {
             this.logger.LogError(ex, "Error updating task status for task ID {TaskId}", taskId);
             return this.StatusCode(500, "An error occurred while updating the task status");
+        }
+    }
+
+    /// <summary>
+    /// Updates the priority of a promotion task.
+    /// </summary>
+    /// <param name="taskId">The ID of the task to update.</param>
+    /// <param name="newPriority">The new priority for the task.</param>
+    /// <returns>The updated promotion task if successful, or NotFound if the task doesn't exist.</returns>
+    [HttpPut("{taskId}/priority")]
+    public async Task<ActionResult<PromotionTask>> UpdateTaskStatus(int taskId, [FromBody] TaskPriority newPriority)
+    {
+        try
+        {
+            var task = new PromotionTask { Priority = newPriority };
+            var updatedTask = await this.taskService.UpdatePromotionTaskAsync(taskId, task);
+            if (updatedTask == null)
+            {
+                return this.NotFound($"Task with ID {taskId} not found");
+            }
+
+            return this.Ok(updatedTask);
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, "Error updating task priority for task ID {TaskId}", taskId);
+            return this.StatusCode(500, "An error occurred while updating the task priority");
         }
     }
 

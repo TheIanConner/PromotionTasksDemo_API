@@ -8,7 +8,7 @@ public enum TaskPriority
     /// <summary>
     /// Low priority tasks that are not time-critical.
     /// </summary>
-    Low,
+    Low = 0,
 
     /// <summary>
     /// Medium priority tasks that should be completed in a reasonable timeframe.

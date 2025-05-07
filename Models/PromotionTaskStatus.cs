@@ -8,7 +8,7 @@ public enum PromotionTaskStatus
     /// <summary>
     /// Task has not been started yet.
     /// </summary>
-    ToDo,
+    ToDo = 0,
 
     /// <summary>
     /// Task is currently being worked on.

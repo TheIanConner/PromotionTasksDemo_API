@@ -65,8 +65,8 @@ public class UserService
     public async Task<User?> GetUserByIdWithReleasesAndTasksAsync(int id)
     {
         var user = await this.context.Users
-            .Include(u => u.Releases)
-                .ThenInclude(r => r.PromotionTasks)
+            .Include(u => u.Releases.Where(r => !r.Deleted))
+                .ThenInclude(r => r.PromotionTasks.Where(t => !t.Deleted))
             .Where(u => u.UserId == id && !u.Deleted)
             .FirstOrDefaultAsync();
         
@@ -87,8 +87,8 @@ public class UserService
     public async Task<User?> GetUserByNameWithReleasesAndTasksAsync(string name)
     {
         var user = await this.context.Users
-            .Include(u => u.Releases)
-                .ThenInclude(r => r.PromotionTasks)
+            .Include(u => u.Releases.Where(r => !r.Deleted))
+                .ThenInclude(r => r.PromotionTasks.Where(t => !t.Deleted))
             .Where(u => u.Name.Equals(name) && !u.Deleted)
             .FirstOrDefaultAsync();
         
