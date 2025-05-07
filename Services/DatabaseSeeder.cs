@@ -57,7 +57,7 @@ public class DatabaseSeeder
                     new ReleaseTask
                     {
                         Title = "Playlist Pitching",
-                        Description = "Research and pitch to relevant Spotify and Apple Music playlists",
+                        Description = "Pitch to playlists",
                         Priority = TaskPriority.Urgent,
                     },
                     new ReleaseTask
