@@ -34,6 +34,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<PromotionTasksService.Services.PromotionTasksService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ReleaseService>();
+builder.Services.AddScoped<AnalyticsService>();
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddLogging();
 

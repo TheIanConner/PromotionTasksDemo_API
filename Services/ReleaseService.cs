@@ -32,6 +32,18 @@ public class ReleaseService
     }
 
     /// <summary>
+    /// Gets all active releases.
+    /// </summary>
+    /// <returns>A list of all active releases.</returns>
+    public async Task<IEnumerable<Release>> GetAllReleasesAsync()
+    {
+        return await this.context.Releases
+            .Include(r => r.PromotionTasks)
+            .Where(r => !r.Deleted)
+            .ToListAsync();
+    }
+
+    /// <summary>
     /// Gets a release by its ID.
     /// </summary>
     /// <param name="id">The ID of the release to retrieve.</param>

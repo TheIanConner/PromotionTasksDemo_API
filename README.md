@@ -2,7 +2,7 @@
 
 A .NET 8.0 Web API service for managing music release promotion tasks.
 
-### Architectureal decisions
+## Demo and Architectural decisions
 
 The project uses:
 
@@ -12,13 +12,32 @@ The project uses:
 - xUnit for testing
 - Moq for mocking in tests
 
+I decided to keep the API and Frontend separate rather than have them in a monorepo, so that they could be deployed separately with their own pipelines. This would enable them to be scaled in dependently too. It does result in Cors complications in this scenario as I'm just using Azure's default hostnames, but I've mitigated that by setting the Cors policy.
+
 After starting with a simple tasks list I decided that tasks should also be tied to a user entity, so that there's some context.
 Then I realised that it made sense that the promotion tasks would be against a release, as a user could have many releases each with their own task lists.
 I added a task list template table into the database to serve as a set list of tasks that a release always starts with. This template list could be editied by an admin app for example.
 I also added priority to the tasks, with the view that the user may want to reorder them as well as update their status.
 
 The code is using GitHub as source control, and automatically deploys out to Azure app services when there is a commit.
-That's not a productionised pipeline (needs quality gates, separate environments, test running, pipelines for manually triggering deployments to Production), but fine for demo purposes.
+It runs the unit tests in the build pipeline too.
+That's not a productionised pipeline (needs quality gates, separate environments, pipelines for manually triggering deployments to Production), but fine for demo purposes.
+
+The Swagger endpoint for this on Azure is
+https://promotiontasksdemo-api-bvdudegdachcdddb.uksouth-01.azurewebsites.net/swagger/index.html
+
+Lastly, I added in an analytics service to give data on:
+
+- Overall completion percentage across all tasks
+- Completion percentage per user
+- Average completion percentage per user
+- Completion percentage per release
+- Average completion percentage per release
+
+### Unfinished areas
+
+I didn't get time to implement proper authentication. So the backend API is currently fully open.
+This would be the next thing to tackle with more time.
 
 ## Getting Started
 
@@ -42,10 +61,15 @@ That's not a productionised pipeline (needs quality gates, separate environments
 ```
 PromotionTasksService/
 ├── Controllers/           # API endpoints
+│   ├── AnalyticsController.cs
 │   ├── PromotionTasksController.cs
 │   ├── ReleaseController.cs
 │   └── UserController.cs
 ├── Models/               # Data models
+│   ├── Analytics/
+│   │   ├── TaskCompletionAnalytics.cs
+│   │   ├── UserCompletionAnalytics.cs
+│   │   └── ReleaseCompletionAnalytics.cs
 │   ├── User.cs
 │   ├── Release.cs
 │   ├── ReleaseTask.cs
@@ -54,6 +78,7 @@ PromotionTasksService/
 │   ├── PromotionTask.cs
 │   └── PromotionTaskStatus.cs
 ├── Services/            # Business logic
+│   ├── AnalyticsService.cs
 │   ├── PromotionTasksService.cs
 │   ├── ReleaseService.cs
 │   ├── UserService.cs
@@ -127,3 +152,13 @@ The application uses SQLite as its database (for demo purposes) and follows a hi
 - GET `/api/promotiontasks/{id}` - Get task by ID
 - POST `/api/promotiontasks` - Create/Update task
 - PUT `/api/promotiontasks/{id}/status` - Update task status
+- PUT `/api/promotiontasks/{id}/priority` - Update task priority
+
+### Analytics
+
+- GET `/api/analytics/completion` - Get overall task completion analytics
+  - Returns overall completion percentage, average per user, and average per release
+- GET `/api/analytics/completion/users` - Get task completion analytics per user
+  - Returns a list of users with their respective completion percentages
+- GET `/api/analytics/completion/releases` - Get task completion analytics per release
+  - Returns detailed stats for each release including completion percentage, total tasks, and completed tasks
