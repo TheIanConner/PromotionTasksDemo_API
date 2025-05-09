@@ -88,15 +88,8 @@ public class PromotionTasksService
             existingTask.Description = task.Description;
         }
 
-        if (task.Status != default)
-        {
-            existingTask.Status = task.Status;
-        }
-
-        if (task.Priority != default)
-        {
-            existingTask.Priority = task.Priority;
-        }
+        existingTask.Status = task.Status;
+        existingTask.Priority = task.Priority;
 
         if (task.DueDate.HasValue)
         {

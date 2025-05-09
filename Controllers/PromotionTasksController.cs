@@ -87,7 +87,15 @@ public class PromotionTasksController : ControllerBase
     {
         try
         {
-            var task = new PromotionTask { Status = newStatus };
+            var task = await this.taskService.GetPromotionTaskByIdAsync(taskId);
+            if (task == null)
+            {
+                return this.NotFound($"Task with ID {taskId} not found");
+            }
+
+            // Update the status
+            task.Status = newStatus;
+
             var updatedTask = await this.taskService.UpdatePromotionTaskAsync(taskId, task);
             if (updatedTask == null)
             {
@@ -110,11 +118,19 @@ public class PromotionTasksController : ControllerBase
     /// <param name="newPriority">The new priority for the task.</param>
     /// <returns>The updated promotion task if successful, or NotFound if the task doesn't exist.</returns>
     [HttpPut("{taskId}/priority")]
-    public async Task<ActionResult<PromotionTask>> UpdateTaskStatus(int taskId, [FromBody] TaskPriority newPriority)
+    public async Task<ActionResult<PromotionTask>> UpdateTaskPriority(int taskId, [FromBody] TaskPriority newPriority)
     {
         try
         {
-            var task = new PromotionTask { Priority = newPriority };
+            var task = await this.taskService.GetPromotionTaskByIdAsync(taskId);
+            if (task == null)
+            {
+                return this.NotFound($"Task with ID {taskId} not found");
+            }
+
+            // Update the priority
+            task.Priority = newPriority;
+
             var updatedTask = await this.taskService.UpdatePromotionTaskAsync(taskId, task);
             if (updatedTask == null)
             {
